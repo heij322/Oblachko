@@ -1,0 +1,34 @@
+@model Product
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<section class="container product-page">
+    <div class="photo product-photo">
+        @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+        {
+            <img class="photo-img" src="@Model.PhotoUrl" alt="@Model.Name">
+        }
+    </div>
+    <div class="product-info">
+        <a class="back-link" href="/?category=@Model.CategoryId#menu">← @Model.Category?.Name</a>
+        <h1 class="product-title">@Model.Name</h1>
+        @if (!string.IsNullOrEmpty(Model.Description))
+        {
+            <p class="product-desc">@Model.Description</p>
+        }
+        <div class="product-meta">
+            <span class="product-price">@Model.Price.Rub()</span>
+            @if (!string.IsNullOrEmpty(Model.Weight))
+            {
+                <span class="muted">@Model.Weight</span>
+            }
+        </div>
+        @if (Model.BakeTime != null)
+        {
+            <p class="hand-caption">каждый день выходит из печи в @Model.BakeTime.Value.ToString("H:mm")</p>
+        }
+        <a class="btn" asp-controller="Orders" asp-action="Create" asp-route-productId="@Model.Id">Предзаказать</a>
+        <p class="muted small">Оплата при получении. Для заказа нужно войти или зарегистрироваться.</p>
+    </div>
+</section>

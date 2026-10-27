@@ -1,0 +1,29 @@
+@model Category
+@{
+    var isEdit = Model.Id != 0;
+    ViewData["Title"] = isEdit ? "Изменить категорию" : "Новая категория";
+    var formAction = isEdit ? "EditCategory" : "CreateCategory";
+}
+
+<section class="container narrow">
+    <a class="back-link" asp-action="Index">← Админка</a>
+    <h1 class="page-title">@ViewData["Title"]</h1>
+
+    <form asp-action="@formAction" method="post" class="form">
+        <input type="hidden" asp-for="Id">
+        <div asp-validation-summary="ModelOnly" class="form-errors"></div>
+
+        <label asp-for="Name"></label>
+        <input asp-for="Name">
+        <span asp-validation-for="Name" class="field-error"></span>
+
+        <label asp-for="SortOrder"></label>
+        <input asp-for="SortOrder">
+        <span asp-validation-for="SortOrder" class="field-error"></span>
+
+        <div class="form-actions">
+            <button type="submit" class="btn">Сохранить</button>
+            <a class="link" asp-action="Index">Отмена</a>
+        </div>
+    </form>
+</section>

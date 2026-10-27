@@ -1,0 +1,113 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Свежий хлеб";
+    var firstProduct = Model.Products.FirstOrDefault();
+    var firstCaption = firstProduct == null
+        ? ""
+        : string.IsNullOrEmpty(firstProduct.Weight) ? firstProduct.Name : firstProduct.Name + ", " + firstProduct.Weight;
+}
+
+<section class="container hero">
+    <div class="hero-text">
+        <span class="kicker">Открыто с 7:00 до 21:00</span>
+        <h1 class="hero-title">Хлеб из печи с&nbsp;семи утра</h1>
+        <p class="hero-lead">Печём небольшими партиями весь день, поэтому на полке всегда что-то тёплое. Расписание печи ниже: можно прийти ровно к нужной булке.</p>
+        <div class="hero-actions">
+            <a class="btn" href="#menu">Смотреть меню</a>
+            <a class="link" href="#pick">Не знаю, что взять</a>
+        </div>
+    </div>
+    <div class="hero-photo photo">
+        <img class="photo-img" src="~/img/products/hero.jpg" alt="Свежий хлеб на доске">
+        <span class="hand-note">этот ещё тёплый</span>
+    </div>
+</section>
+
+<section class="container section" id="oven">
+    <div class="section-head">
+        <h2>Печь сегодня</h2>
+        <span class="muted">сейчас <strong class="ink">@Model.Now.ToString("H:mm")</strong>, @Model.Now.ToString("dddd")</span>
+    </div>
+
+    @if (Model.Oven.Count == 0)
+    {
+        <p class="muted">Расписание печи пока не заполнено.</p>
+    }
+    else
+    {
+        <ol class="oven">
+            @foreach (var item in Model.Oven)
+            {
+                <li class="oven-item @item.CssClass">
+                    <span class="oven-dot"></span>
+                    <span class="oven-time">@item.Time</span>
+                    <a class="oven-name" asp-controller="Products" asp-action="Details" asp-route-id="@item.ProductId">@item.Name</a>
+                    <span class="oven-note">@item.Note</span>
+                </li>
+            }
+        </ol>
+    }
+</section>
+
+<section class="container section" id="menu">
+    <div class="section-head">
+        <h2>Меню</h2>
+        <div class="tabs">
+            @foreach (var category in Model.Categories)
+            {
+                var active = category.Id == Model.SelectedCategory?.Id ? "tab active" : "tab";
+                <a class="@active" href="@Url.Action("Index", "Home", new { category = category.Id })#menu">@category.Name</a>
+            }
+        </div>
+    </div>
+
+    @if (Model.Products.Count == 0)
+    {
+        <p class="muted">В этом разделе пока пусто.</p>
+    }
+    else
+    {
+        <div class="menu-layout">
+            <div class="price-list">
+                @foreach (var product in Model.Products)
+                {
+                    var caption = string.IsNullOrEmpty(product.Weight) ? product.Name : product.Name + ", " + product.Weight;
+                    <a class="price-row" asp-controller="Products" asp-action="Details" asp-route-id="@product.Id"
+                       data-photo="@product.PhotoUrl" data-caption="@caption">
+                        <span class="price-line">
+                            <span class="price-name">@product.Name</span>
+                            <span class="dots"></span>
+                            <span class="price">@product.Price.Rub()</span>
+                        </span>
+                        @if (!string.IsNullOrEmpty(product.Description))
+                        {
+                            <span class="price-desc">@product.Description</span>
+                        }
+                    </a>
+                }
+            </div>
+            <div class="menu-preview">
+                <div class="photo menu-photo">
+                    <img class="photo-img" id="menu-photo" src="@firstProduct?.PhotoUrl" alt="">
+                </div>
+                <span class="hand-caption" id="menu-caption">@firstCaption</span>
+            </div>
+        </div>
+    }
+</section>
+
+<section class="pick" id="pick">
+    <div class="container pick-inner">
+        <span class="pick-question">Стоите у витрины и не можете выбрать?</span>
+        <a class="pick-name" id="pick-name" href="#menu">Что-нибудь вкусное</a>
+        <span class="pick-why" id="pick-why">нажмите на кнопку, мы подскажем</span>
+        <span class="pick-price" id="pick-price"></span>
+        <button type="button" class="btn btn-dark" id="pick-button">Выбери за меня</button>
+        <ul hidden id="pick-data">
+            @foreach (var product in Model.All)
+            {
+                <li data-name="@product.Name" data-price="@product.Price.Rub()" data-url="@Url.Action("Details", "Products", new { id = product.Id })"></li>
+            }
+        </ul>
+    </div>
+</section>

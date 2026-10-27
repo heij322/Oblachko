@@ -1,0 +1,27 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Вход";
+}
+
+<section class="container narrow">
+    <h1 class="page-title">Вход</h1>
+    <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" class="form">
+        <div asp-validation-summary="ModelOnly" class="form-errors"></div>
+
+        <label asp-for="Email"></label>
+        <input asp-for="Email" autocomplete="email">
+        <span asp-validation-for="Email" class="field-error"></span>
+
+        <label asp-for="Password"></label>
+        <input asp-for="Password" autocomplete="current-password">
+        <span asp-validation-for="Password" class="field-error"></span>
+
+        <label class="check">
+            <input asp-for="RememberMe">
+            <span>Запомнить меня</span>
+        </label>
+
+        <button type="submit" class="btn">Войти</button>
+    </form>
+    <p class="form-footer">Нет аккаунта? <a asp-action="Register">Зарегистрироваться</a></p>
+</section>

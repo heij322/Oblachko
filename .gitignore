@@ -1,0 +1,9 @@
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+wwwroot/uploads/
+*.db
+*.db-shm
+*.db-wal

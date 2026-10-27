@@ -1,0 +1,137 @@
+@model AdminViewModel
+@{
+    ViewData["Title"] = "Админка";
+}
+
+<section class="container section admin">
+    <h1 class="page-title">Админка</h1>
+
+    @if (TempData["Message"] is string message)
+    {
+        <p class="notice">@message</p>
+    }
+    @if (TempData["Error"] is string error)
+    {
+        <p class="notice notice-error">@error</p>
+    }
+
+    <div class="admin-block">
+        <div class="section-head">
+            <h2>Заказы</h2>
+        </div>
+        @if (Model.Orders.Count == 0)
+        {
+            <p class="muted">Заказов пока нет.</p>
+        }
+        else
+        {
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr><th>№</th><th>Изделие</th><th>Кол-во</th><th>Сумма</th><th>Забрать</th><th>Покупатель</th><th>Пожелания</th><th>Статус</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.Orders)
+                        {
+                            <tr>
+                                <td><a asp-controller="Orders" asp-action="Details" asp-route-id="@order.Id">@order.Id.ToString("D4")</a></td>
+                                <td>@order.Product?.Name</td>
+                                <td>@order.Quantity</td>
+                                <td>@order.Total.Rub()</td>
+                                <td>@order.PickupDate.ToString("dd.MM.yyyy")</td>
+                                <td>@order.User?.Email</td>
+                                <td>@order.Comment</td>
+                                <td>
+                                    <form asp-action="SetOrderStatus" asp-route-id="@order.Id" method="post" class="status-form">
+                                        <select name="status" aria-label="Статус заказа">
+                                            @foreach (var status in OrderStatuses.All)
+                                            {
+                                                if (status == order.Status)
+                                                {
+                                                    <option value="@status" selected>@status</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@status">@status</option>
+                                                }
+                                            }
+                                        </select>
+                                        <button type="submit" class="btn btn-small">ОК</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <div class="admin-block">
+        <div class="section-head">
+            <h2>Изделия</h2>
+            <a class="btn btn-small" asp-action="CreateProduct">Добавить изделие</a>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr><th>Фото</th><th>Название</th><th>Категория</th><th>Цена</th><th>В печь</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Model.Products)
+                    {
+                        <tr>
+                            <td>
+                                <div class="photo thumb">
+                                    @if (!string.IsNullOrEmpty(product.PhotoUrl))
+                                    {
+                                        <img class="photo-img" src="@product.PhotoUrl" alt="">
+                                    }
+                                </div>
+                            </td>
+                            <td>@product.Name</td>
+                            <td>@product.Category?.Name</td>
+                            <td>@product.Price.Rub()</td>
+                            <td>@(product.BakeTime?.ToString("H:mm") ?? "—")</td>
+                            <td class="row-actions">
+                                <a asp-action="EditProduct" asp-route-id="@product.Id">Изменить</a>
+                                <form asp-action="DeleteProduct" asp-route-id="@product.Id" method="post" onsubmit="return confirm('Удалить изделие и его заказы?');">
+                                    <button type="submit" class="text-button">Удалить</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="admin-block">
+        <div class="section-head">
+            <h2>Категории</h2>
+            <a class="btn btn-small" asp-action="CreateCategory">Добавить категорию</a>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr><th>Порядок</th><th>Название</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <tr>
+                            <td>@category.SortOrder</td>
+                            <td>@category.Name</td>
+                            <td class="row-actions">
+                                <a asp-action="EditCategory" asp-route-id="@category.Id">Изменить</a>
+                                <form asp-action="DeleteCategory" asp-route-id="@category.Id" method="post" onsubmit="return confirm('Удалить категорию?');">
+                                    <button type="submit" class="text-button">Удалить</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

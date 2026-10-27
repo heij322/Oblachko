@@ -1,0 +1,16 @@
+@{
+    var code = ViewData["Code"] as int? ?? 500;
+    var text = code switch
+    {
+        404 => "Такой страницы нет. Наверное, её уже кто-то съел.",
+        403 => "Сюда можно только сотрудникам пекарни.",
+        _ => "Что-то пошло не так. Попробуйте обновить страницу чуть позже."
+    };
+    ViewData["Title"] = code == 404 ? "Страница не найдена" : "Ошибка";
+}
+
+<section class="container status-page">
+    <span class="status-code">@code</span>
+    <p class="status-text">@text</p>
+    <a class="btn" href="/">На главную</a>
+</section>

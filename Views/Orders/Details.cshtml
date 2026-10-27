@@ -1,0 +1,31 @@
+@model Order
+@{
+    ViewData["Title"] = $"Заказ № {Model.Id:D4}";
+}
+
+<section class="container receipt-page">
+    <div class="receipt">
+        <div class="receipt-head">
+            <strong>ОБЛАЧКО</strong>
+            <span>пекарня, Ижевск</span>
+        </div>
+        <hr class="dash">
+        <div class="r-row"><span>ПРЕДЗАКАЗ</span><strong>№ @Model.Id.ToString("D4")</strong></div>
+        <div class="r-row"><span>оформлен</span><span>@BakeryClock.ToLocal(Model.CreatedAt).ToString("dd.MM HH:mm")</span></div>
+        <div class="r-row"><span>забрать</span><strong>@Model.PickupDate.ToString("dd.MM.yyyy")</strong></div>
+        <hr class="dash">
+        <div class="r-row"><span>@Model.Product?.Name × @Model.Quantity</span><span>@Model.Total.ToString("N0")</span></div>
+        @if (!string.IsNullOrEmpty(Model.Comment))
+        {
+            <div class="r-comment">«@Model.Comment»</div>
+        }
+        <hr class="dash">
+        <div class="r-row r-total"><span>ИТОГО</span><span>@Model.Total.Rub()</span></div>
+        <span class="r-muted">оплата при получении</span>
+        <div class="stamp-wrap">
+            <span class="stamp @OrderStatuses.CssClass(Model.Status)">@Model.Status.ToUpper()</span>
+        </div>
+        <span class="r-thanks">спасибо, ждём вас!</span>
+    </div>
+    <a class="link" asp-action="My">Все мои заказы</a>
+</section>

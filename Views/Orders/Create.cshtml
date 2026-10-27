@@ -1,0 +1,38 @@
+@model OrderViewModel
+@{
+    ViewData["Title"] = "Предзаказ";
+    var product = Model.Product!;
+}
+
+<section class="container order-page">
+    <div class="order-product">
+        <div class="photo order-photo">
+            @if (!string.IsNullOrEmpty(product.PhotoUrl))
+            {
+                <img class="photo-img" src="@product.PhotoUrl" alt="@product.Name">
+            }
+        </div>
+        <h1 class="page-title">@product.Name</h1>
+        <span class="product-price">@product.Price.Rub() <span class="muted small">за штуку</span></span>
+    </div>
+
+    <form asp-action="Create" method="post" class="form">
+        <input type="hidden" asp-for="ProductId">
+        <div asp-validation-summary="ModelOnly" class="form-errors"></div>
+
+        <label asp-for="Quantity"></label>
+        <input asp-for="Quantity" min="1" max="50">
+        <span asp-validation-for="Quantity" class="field-error"></span>
+
+        <label asp-for="PickupDate"></label>
+        <input asp-for="PickupDate" type="date">
+        <span asp-validation-for="PickupDate" class="field-error"></span>
+
+        <label asp-for="Comment">Пожелания, например надпись на торте</label>
+        <textarea asp-for="Comment" rows="3"></textarea>
+        <span asp-validation-for="Comment" class="field-error"></span>
+
+        <button type="submit" class="btn">Оформить предзаказ</button>
+        <p class="muted small">Оплата при получении в пекарне.</p>
+    </form>
+</section>

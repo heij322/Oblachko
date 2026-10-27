@@ -1,0 +1,55 @@
+@model Product
+@{
+    var isEdit = Model.Id != 0;
+    ViewData["Title"] = isEdit ? "Изменить изделие" : "Новое изделие";
+    var formAction = isEdit ? "EditProduct" : "CreateProduct";
+    var categories = (Microsoft.AspNetCore.Mvc.Rendering.SelectList)ViewBag.Categories;
+}
+
+<section class="container narrow">
+    <a class="back-link" asp-action="Index">← Админка</a>
+    <h1 class="page-title">@ViewData["Title"]</h1>
+
+    <form asp-action="@formAction" method="post" enctype="multipart/form-data" class="form">
+        <input type="hidden" asp-for="Id">
+        <input type="hidden" asp-for="PhotoUrl">
+        <div asp-validation-summary="ModelOnly" class="form-errors"></div>
+
+        <label asp-for="Name"></label>
+        <input asp-for="Name">
+        <span asp-validation-for="Name" class="field-error"></span>
+
+        <label asp-for="CategoryId"></label>
+        <select asp-for="CategoryId" asp-items="categories"></select>
+        <span asp-validation-for="CategoryId" class="field-error"></span>
+
+        <label asp-for="Price"></label>
+        <input asp-for="Price" min="1">
+        <span asp-validation-for="Price" class="field-error"></span>
+
+        <label asp-for="Weight"></label>
+        <input asp-for="Weight" placeholder="например, 300 г">
+        <span asp-validation-for="Weight" class="field-error"></span>
+
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" rows="3"></textarea>
+        <span asp-validation-for="Description" class="field-error"></span>
+
+        <label for="BakeTime">Время выпечки (если пусто, в «Печь сегодня» не попадёт)</label>
+        <input id="BakeTime" name="BakeTime" type="time" value="@Model.BakeTime?.ToString("HH:mm")">
+
+        <label for="photo">Фото (jpg, png или webp, до 5 МБ)</label>
+        @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+        {
+            <div class="photo form-photo">
+                <img class="photo-img" src="@Model.PhotoUrl" alt="Текущее фото">
+            </div>
+        }
+        <input id="photo" name="photo" type="file" accept=".jpg,.jpeg,.png,.webp">
+
+        <div class="form-actions">
+            <button type="submit" class="btn">Сохранить</button>
+            <a class="link" asp-action="Index">Отмена</a>
+        </div>
+    </form>
+</section>
